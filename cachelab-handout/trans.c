@@ -22,6 +22,95 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+	int m, i, g, a, o, loves, coding, ii, j, jj;
+	if ( M == 32 && N == 32 )
+		for (i = 0; i < 32; i += 8) {
+			for (j = 0; j < 32; j += 8) {
+				for (ii = i; ii < i + 8; ii++) {
+					m = A[ii][j];
+					g = A[ii][j + 1];
+					a = A[ii][j + 2];
+					o = A[ii][j + 3];
+					loves = A[ii][j + 4];
+					coding = A[ii][j + 5];
+					M = A[ii][j + 6];
+					N = A[ii][j + 7];
+					B[j][ii] = m;
+					B[j + 1][ii] = g;
+					B[j + 2][ii] = a;
+					B[j + 3][ii] = o;
+					B[j + 4][ii] = loves;
+					B[j + 5][ii] = coding;
+					B[j + 6][ii] = M;
+					B[j + 7][ii] = N;
+				}
+			}
+		}
+	else if ( M == 64 && N == 64 )
+		for (i = 0; i < 64; i += 8) {
+			for (j = 0; j < 64; j += 8) {
+				for (ii = i; ii < i + 4; ii++) {
+					m = A[ii][j];
+					g = A[ii][j + 1];
+					a = A[ii][j + 2];
+					o = A[ii][j + 3];
+					loves = A[ii][j + 4];
+					coding = A[ii][j + 5];
+					M = A[ii][j + 6];
+					N = A[ii][j + 7];
+					B[j][ii] = m;
+					B[j + 1][ii] = g;
+					B[j + 2][ii] = a;
+					B[j + 3][ii] = o;
+					B[j][ii + 4] = loves;
+					B[j + 1][ii + 4] = coding;
+					B[j + 2][ii + 4] = M;
+					B[j + 3][ii + 4] = N;
+				}
+				for (jj = j; jj < j + 4; jj++) {
+					m = A[i + 4][jj];
+					g = A[i + 5][jj];
+					a = A[i + 6][jj];
+					o = A[i + 7][jj];
+					loves = B[jj][i + 4];
+					coding = B[jj][i + 5];
+					M = B[jj][i + 6];
+					N = B[jj][i + 7];
+					B[jj][i + 4] = m;
+					B[jj][i + 5] = g;
+					B[jj][i + 6] = a;
+					B[jj][i + 7] = o;
+					B[jj + 4][i] = loves;
+					B[jj + 4][i + 1] = coding;
+					B[jj + 4][i + 2] = M;
+					B[jj + 4][i + 3] = N;
+				}
+				for (jj = j + 4; jj < j + 8; jj++) {
+					m = A[i + 4][jj];
+					g = A[i + 5][jj];
+					a = A[i + 6][jj];
+					o = A[i + 7][jj];
+					B[jj][i + 4] = m;
+					B[jj][i + 5] = g;
+					B[jj][i + 6] = a;
+					B[jj][i + 7] = o;
+				}
+			}
+		}
+	else if ( M == 61 && N == 67 )
+		for (i = 0; i <= 64; i += 12) {
+			for (j = 0; j < 64; j += 4) {
+				for (ii = i; ii < i + 12; ii++) {
+					for (jj = j; jj < j + 4; jj++) {
+						if (ii < 67 && jj < 61) {
+							m = A[ii][jj];
+							B[jj][ii] = m;
+						}
+					}
+				}
+				
+			}
+		}
 }
 
 /* 
